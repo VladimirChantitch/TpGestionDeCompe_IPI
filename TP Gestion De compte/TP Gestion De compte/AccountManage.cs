@@ -8,17 +8,31 @@ namespace TP_Gestion_De_compte
 {
     public class AccountManage
     {
+        #region Attributs
         List<UserOptionsMenu> userOptions;
+        public List<UserOptionsMenu> UserOptions { get { return userOptions; } set { userOptions = value; } }
         UserOptionsMenu MainMenu;
+        public UserOptionsMenu mainMenu { get { return MainMenu; } set { MainMenu = value; } }
         UserOptionsMenu ClientMenu;
+        public UserOptionsMenu clientMenu { get { return ClientMenu; } set {ClientMenu = value; } }
         UserOptionsMenu AccountMenu;
+        public UserOptionsMenu accountMenu { get { return AccountMenu; } set { AccountMenu = value; } }
         UserOptionsMenu ClientAccountMenu; 
+        public UserOptionsMenu clientAccountMenu { get { return ClientAccountMenu; } set { ClientAccountMenu = value; } }
 
         UserOptionsMenu currentMenu;
+        public UserOptionsMenu CurrentMenu { get { return currentMenu; } set { currentMenu = value; } }
 
         List<Client> clients;
+        public List<Client> Clients { get { return clients; } set { clients = value; } }
         Client currentClient;
-        
+        public Client CurrentClient { get { return currentClient; } set { currentClient = value; } }
+
+        bool isWorking = true;
+        public bool IsWorking { get { return isWorking; } set { isWorking = value; } }
+        #endregion
+
+        #region InitMenu
         public AccountManage()
         {
             ClientMenu = new UserOptionsMenu(
@@ -29,7 +43,7 @@ namespace TP_Gestion_De_compte
                                             action = () => {currentMenu = MainMenu; }
                     },
                     new unitary_option(){option_description = "Prompt 1 to add a client",
-                                            action = () => {AddClient(); }
+                                            action = () => {Tools.AddClient(this); }
                     }
                 }
             );
@@ -44,12 +58,18 @@ namespace TP_Gestion_De_compte
                 }
             );
 
-            AccountMenu = new UserOptionsMenu(
-                "Account Menu",
+            ClientAccountMenu = new UserOptionsMenu(
+                "Client Account Menu",
                 new List<unitary_option>()
                 {
                     new unitary_option(){option_description = "Prompt 0 to go back to main menu",
-                                            action = () => {currentMenu = MainMenu; }
+                                            action = () => {currentMenu = MainMenu; currentClient = null; }
+                    },
+                    new unitary_option(){option_description = "Prompt 1 to add a main account to your client",
+                                            action = () => {Tools.AddAccount(this, typeof(MainAccount)); }
+                    },
+                    new unitary_option(){option_description = "Prompt 2 to add a savings account to your client",
+                                            action = () => {Tools.AddAccount(this, typeof(SavingsAccount)); }
                     }
                 }
             );
@@ -59,7 +79,7 @@ namespace TP_Gestion_De_compte
                 new List<unitary_option>()
                 {
                     new unitary_option(){option_description = "Prompt 0 to exit",
-                                            action = () => {ExitApp(); }
+                                            action = () => {Tools.ExitApp(this); }
                     },
                     new unitary_option(){option_description = "Prompt 1 to manage clients",
                                             action = () => {currentMenu = ClientMenu; }
@@ -74,26 +94,25 @@ namespace TP_Gestion_De_compte
             {
                 MainMenu,
                 AccountMenu,
-                ClientMenu
+                ClientMenu,
+                ClientAccountMenu
             };
         }
+        #endregion
 
-
-        bool isWorking = true;
+        #region Menu  Loop
         public void StartDoingBankStuff()
         {
             currentMenu = MainMenu;
             while (isWorking)
             {
-                string instruction = AskForInstruction();
+                AskForInstruction();
             }
         }
 
-        private string AskForInstruction()
+        private void AskForInstruction()
         {
-            bool isValidInstruction = false;
             ShowOptions();
-            return " ";
         }
 
         private void ShowOptions()
@@ -120,62 +139,6 @@ namespace TP_Gestion_De_compte
             }
 
             currentMenu.unitary_Options[index].action();
-        }
-        #region Fonctionnalities
-        private void ExitApp()
-        {
-            Console.WriteLine($"Ho you are using a day off, Fine");
-            isWorking = false;
-        }
-
-        private void AddClient()
-        {
-            if (clients == null) clients = new List<Client>();
-
-            bool isStatisfied = false;
-
-            string name = "Smith";
-            string firstname = "Tom";
-            int age = 18;
-
-            while (!isStatisfied)
-            {
-                try
-                {
-                    Console.WriteLine("Client Name");
-                    name = Console.ReadLine();
-                    Console.WriteLine("Client FirstName");
-                    firstname = Console.ReadLine();
-                    Console.WriteLine("Client Age");
-                    age = Convert.ToInt32(Console.ReadLine());
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-
-                try
-                {
-                    Console.Clear();
-                    Console.WriteLine($"You Got {name} {firstname} {age}");
-                    Console.WriteLine("Are you satisfied?");
-                    if (Tools.CheckYesNo()) isStatisfied = true;
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-            clients.Add(new Client(firstname, age, name));
-
-            Console.Clear();
-            Console.WriteLine("Well done!!!");
-            Console.WriteLine("Now do you whish to take a look at this client accounts ?");
-            
-            if (Tools.CheckYesNo())
-            {
-
-            }
         }
         #endregion
 
