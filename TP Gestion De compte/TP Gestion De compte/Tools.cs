@@ -98,11 +98,13 @@ namespace TP_Gestion_De_compte
                 switch (type.Name)
                 {
                     case "MainAccount":
-
+                        MainAccount mainAccount = new MainAccount(400, manage.CurrentClient);
+                        manage.CurrentClient.AddAccount(mainAccount);
                         break;
 
                     case "SavingsAccount":
-
+                        SavingsAccount savingsAccount = new SavingsAccount((decimal)0.32, manage.CurrentClient);
+                        manage.CurrentClient.AddAccount(savingsAccount);
                         break;
                 }
             }
